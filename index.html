@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+      <!-- Custom Tailwind Animations -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          animation: {
+            scroll: 'scroll 30s linear infinite',
+          },
+          keyframes: {
+            scroll: {
+              '0%': { transform: 'translateX(100%)' },
+              '100%': { transform: 'translateX(-100%)' },
+            },
+          },
+        }
+      }
+    }
+  </script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles if needed, though Tailwind covers most */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f4f4; /* Set the background color as requested */
+            color: #333; /* Default text color for better contrast */
+        }
+        /* Hamburger icon animation */
+        .hamburger-line {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .hamburger.active .line-top {
+            transform: translateY(8px) rotate(45deg);
+        }
+
+        .hamburger.active .line-middle {
+            opacity: 0;
+        }
+
+        .hamburger.active .line-bottom {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+
+        /* Custom shadow for the image to match the design */
+        .custom-shadow-light {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.03);
+        }
+        /* Custom offset grey drop shadow for the button (no blur) */
+        .custom-shadow-button {
+            box-shadow: 4px 4px 0px rgba(128, 128, 128, 0.4); /* Offset grey shadow with 0 blur */
+        }
+
+        /* Marquee animation */
+        @keyframes scroll-left {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+
+        .animate-marquee {
+            animation: scroll-left 40s linear infinite; /* Adjust speed as needed */
+        }
+
+        /* Linear fading edges for the marquee content (left and right, closer) */
+        .marquee-fade-mask {
+            /* This mask fades the content within the marquee linearly from left/right, closer to edges */
+            mask-image: linear-gradient(to right,
+                transparent 0%,
+                black 5%, /* Start fade in very close to the left edge */
+                black 95%, /* End fade out very close to the right edge */
+                transparent 100%);
+            -webkit-mask-image: linear-gradient(to right,
+                transparent 0%,
+                black 5%,
+                black 95%,
+                transparent 100%);
+            position: absolute; /* Position over the marquee content */
+            inset: 0; /* Cover the entire container */
+            pointer-events: none; /* Allow interaction with elements underneath */
+        }
+
+        /* Fixed tooltip styles */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            z-index: 100;
+        }
+
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            background-color: #111;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px 12px;
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            font-size: 12px;
+            pointer-events: none;
+        }
+
+        /* Arrow pointing down */
+        .tooltip .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #111 transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .tooltip:hover {
+            z-index: 1001;
+        }
+</style>
+</head>
+<body>
+    <!-- Navbar with fixed position and matching background color, no shadow or rounded corners -->
+    <nav class="fixed top-0 w-full z-50 bg-[#f4f4f4] py-4">
+        <div class="container mx-auto flex justify-end md:justify-center items-center">
+            <!-- Mobile Hamburger Menu Icon - visible only on small screens -->
+            <div class="hamburger md:hidden cursor-pointer p-2 rounded-md transition duration-300 ease-in-out hover:bg-gray-100" id="hamburger-menu">
+                <span class="hamburger-line block w-6 h-0.5 bg-gray-700 my-1 rounded-full line-top"></span>
+                <span class="hamburger-line block w-6 h-0.5 bg-gray-700 my-1 rounded-full line-middle"></span>
+                <span class="hamburger-line block w-6 h-0.5 bg-gray-700 my-1 rounded-full line-bottom"></span>
+            </div>
+
+            <!-- Navigation Links - hidden on small, flex on medium and larger, centered on desktop -->
+            <ul class="hidden md:flex space-x-8" id="nav-links">
+                <li><a href="#HOME" class="text-gray-700 hover:text-gray-200 font-medium transition duration-300 ease-in-out p-2 rounded-md hover:bg-black text-sm">HOME</a></li>
+                <li><a href="#HOME" class="text-gray-700 hover:text-gray-200 font-medium transition duration-300 ease-in-out p-2 rounded-md hover:bg-black text-sm">ABOUT</a></li>
+                <li><a href="#WORK" class="text-gray-700 hover:text-gray-200 font-medium transition duration-300 ease-in-out p-2 rounded-md hover:bg-black text-sm">WORK</a></li>
+                <li><a href="#CONTACT" class="text-gray-700 hover:text-gray-200 font-medium transition duration-300 ease-in-out p-2 rounded-md hover:bg-black text-sm">CONTACT</a></li>
+            </ul>
+        </div>
+
+        <!-- Mobile Menu Overlay (hidden by default, appears when hamburger is clicked) -->
+        <div class="md:hidden fixed inset-0 bg-[#f4f4f4] z-40 flex flex-col items-center justify-center transition-transform duration-300 ease-in-out transform translate-x-full" id="mobile-menu-overlay">
+            <!-- Close button (X icon) -->
+            <div class="absolute top-4 right-4 cursor-pointer p-2 rounded-md transition duration-300 ease-in-out hover:bg-gray-100" id="close-menu">
+                <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </div>
+            <ul class="flex flex-col items-center space-y-8 text-xl">
+                <li><a href="#HOME" class="text-gray-700 hover:text-gray-200 font-medium transition duration-300 ease-in-out p-2 rounded-md hover:bg-black w-full text-center block" id="mobile-home-link">HOME</a></li>
+                <li><a href="#HOME" class="text-gray-700 hover:text-gray-200 font-medium transition duration-300 ease-in-out p-2 rounded-md hover:bg-black w-full text-center block" id="mobile-about-link">ABOUT</a></li>
+                <li><a href="#WORK" class="text-gray-700 hover:text-gray-200 font-medium transition duration-300 ease-in-out p-2 rounded-md hover:bg-black w-full text-center block" id="mobile-work-link">WORK</a></li>
+                <li><a href="#CONTACT" class="text-gray-700 hover:text-gray-200 font-medium transition duration-300 ease-in-out p-2 rounded-md hover:bg-black w-full text-center block" id="mobile-contact-link">CONTACT</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="min-h-screen flex items-center justify-center pt-16 md:pt-0" id="HOME">
+        <div class="container mx-auto px-4 py-8 flex flex-col md:flex-row items-center justify-center space-y-8 md:space-y-0 md:space-x-16 max-w-4xl">
+            <!-- Profile Picture with offset border -->
+            <div class="relative flex-shrink-0 w-48 h-48 md:w-64 md:h-64 rounded-full">
+                <!-- The offset border/background layer - reduced offset -->
+                <div class="absolute inset-0 rounded-full bg-[#1e1e1e] transform translate-x-1 translate-y-1 z-0"></div>
+                <!-- Profile Picture -->
+                <img src="assets/me.jpg"
+                     alt="Kingsley Emori"
+                     class="w-full h-full rounded-full object-cover custom-shadow-light relative z-10">
+                <!-- Note: Replace the src with your actual image URL. -->
+            </div>
+
+            <!-- Text Content and Button -->
+            <div class="text-center md:text-left">
+                <h2 class="text-4xl md:text-5xl font-bold mb-2 leading-tight">Hello!</h2>
+                <h1 class="text-3xl md:text-4xl font-normal mb-4 leading-tight">I'm Kingsley emori,</h1>
+                <p class="text-2xl md:text-3xl font-normal mb-4 leading-tight">
+                    a <span class="italic font-light">frontend</span> <span class="font-normal">developer</span>
+                </p>
+                <p class="text-base md:text-lg text-gray-600 mb-8 max-w-md mx-auto md:mx-0">
+                    who loves solving problems by building awesome web apps and websites.
+                </p>
+
+                <!-- Download CV Button with subtle rounded corners and offset shadow -->
+                <a href="#" class="inline-flex items-center bg-black text-white px-6 py-3 rounded custom-shadow-button transition duration-300 ease-in-out hover:bg-[#f4f4f4] hover:text-[#1e1e1e]">
+                    Download CV
+                    <!-- Placeholder for your local icon -->
+                    <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                    </svg>
+                    <!-- Note: Replace the SVG above with your actual local icon's SVG code.
+                         Also, replace the href with the actual URL to your CV file. -->
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- === SCROLLING ICONS SECTION === -->
+<section class="relative py-24 bg-[#f4f4f4] overflow-hidden">
+
+  <!-- ICON STRIP (on top) -->
+  <div class="relative z-10">
+    <div class="overflow-hidden">
+      <div class="flex animate-scroll items-center gap-12 px-6 whitespace-nowrap w-max">
+
+        <!-- ICON TOOLTIP EXAMPLES -->
+        <div class="tooltip">
+          <img src="assets/icons/icons8-html.svg" alt="HTML" class="h-12 w-auto" />
+          <span class="tooltip-text">HTML</span>
+        </div>
+
+         <div class="tooltip">
+          <img src="assets/icons/icons8-css.svg" alt="CSS" class="h-12 w-auto" />
+          <span class="tooltip-text">CSS</span>
+        </div>
+ <div class="tooltip">
+          <img src="assets/icons/icons8-tailwind-css-48.png" alt="Tailwind" class="h-12 w-auto" />
+          <span class="tooltip-text">Tailwind CSS</span>
+        </div>
+        <div class="tooltip">
+          <img src="assets/icons/icons8-javascript.svg" alt="JavaScript" class="h-12 w-auto" />
+          <span class="tooltip-text">JavaScript</span>
+        </div>
+        <div class="tooltip">
+          <img src="assets/icons/icons8-typescript-50.png" alt="TypeScript" class="h-12 w-auto" />
+          <span class="tooltip-text">TypeScript</span>
+        </div>
+        <div class="tooltip">
+          <img src="assets/icons/icons8-react-50.png" alt="React" class="h-12 w-auto" />
+          <span class="tooltip-text">React</span>
+        </div>
+
+        <div class="tooltip">
+          <img src="assets/icons/icons8-sublime-text-50.png" alt="Sublime" class="h-12 w-auto" />
+          <span class="tooltip-text">Sublime Text</span>
+        </div>
+        <div class="tooltip">
+          <img src="assets/icons/icons8-visual-studio-code-50.png" alt="VSCode" class="h-12 w-auto" />
+          <span class="tooltip-text">VS Code</span>
+        </div>
+        <!-- Loop again -->
+        <div class="tooltip">
+          <img src="assets/icons/icons8-framer-50.png" alt="Framer" class="h-12 w-auto" />
+          <span class="tooltip-text">Framer</span>
+        </div>
+        <div class="tooltip">
+          <img src="assets/icons/icons8-html.svg" alt="HTML" class="h-12 w-auto" />
+          <span class="tooltip-text">HTML</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOTTED BACKGROUND -->
+  <div class="absolute inset-0 w-full h-full opacity-30 pointer-events-none z-0" 
+       style="background-image: radial-gradient(circle, #ccc 1px, transparent 1px); background-size: 20px 20px;"></div>
+
+  <!-- LEFT & RIGHT FADES -->
+  <div class="absolute left-0 top-0 h-full w-24 bg-gradient-to-r from-[#f4f4f4] to-transparent z-20 pointer-events-none"></div>
+  <div class="absolute right-0 top-0 h-full w-24 bg-gradient-to-l from-[#f4f4f4] to-transparent z-20 pointer-events-none"></div>
+
+</section>
+
+    <!-- === WORK SECTION === -->
+    <section class="py-20 bg-[#f4f4f4]" id="WORK">
+        <div class="container mx-auto px-4 max-w-6xl">
+            <!-- Section Header -->
+            <div class="text-left mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">Work</h2>
+                <p class="text-lg text-gray-600">My Recent Web applications</p>
+            </div>
+
+            <!-- Project Card 1 -->
+            <div class="bg-gray-100 rounded-3xl border-4 border-black p-6 md:p-8 mb-16">
+                <div class="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+                    
+                    <!-- Project Image Container -->
+                    <div class="w-full lg:w-1/2 flex-shrink-0">
+                        <div class="relative bg-gray-100 rounded-2xl p-4 md:p-6">
+                            <!-- Laptop Mockup -->
+                            <div class="relative bg-gray-800 rounded-lg p-1">
+                                <!-- Screen -->
+                                <div class="bg-white rounded-md aspect-[16/10] overflow-hidden">
+                                    <!-- Replace this with your actual project image -->
+                                    <img src="assets/Scene1.jpg" alt="Project Name" class="w-full h-full object-cover">
+                                    <!-- Fallback mockup content (remove when you add your image) -->
+                                    <div class="h-full w-full bg-gray-50 flex items-center justify-center">
+                                        <div class="text-center p-8">
+                                            <!-- <div class="text-4xl md:text-6xl font-bold text-gray-800 mb-4">PROJECT 1</div> -->
+                                            <div class="w-16 h-16 mx-auto bg-gray-300 rounded-full mb-4"></div>
+                                            <div class="space-y-2">
+                                                <div class="h-2 bg-gray-300 rounded w-full"></div>
+                                                <div class="h-2 bg-gray-300 rounded w-3/4 mx-auto"></div>
+                                                <div class="h-2 bg-gray-300 rounded w-1/2 mx-auto"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Laptop Bottom -->
+                                <div class="h-2 bg-gray-600 rounded-b-lg"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Project Details -->
+                    <div class="w-full lg:w-1/2 text-center lg:text-left">
+                        <h3 class="text-3xl md:text-4xl font-bold mb-6">Symbol Board</h3>
+                        
+                        <!-- Visit Site Button -->
+                        <div class="mb-6">
+                            <a href="https://kingsley489.github.io/SymbolBoard/index.html" class="inline-flex items-center bg-gray-100 border-2 border-black rounded-full px-6 py-2 text-sm font-medium hover:bg-black hover:text-white transition duration-300 ease-in-out" target="_blank">
+                                visit site
+                                <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                </svg>
+                            </a>
+                        </div>
+
+                        <!-- Project Description -->
+                        <p class="text-gray-700 mb-6 leading-relaxed">
+                           My classmates were always getting frustrated trying to find physics, math, and chemistry symbols. To tackle this issue, I created the Symbol Board: a handy web tool that lets you search for and copy symbols in an instant. To make sure it runs quickly, I utilized a JSON file and JavaScript for dynamic loading, keeping everything smooth and fast. Right now, I'm also working on an extension and a tutorial video to make access even easier!
+                        </p>
+
+                        <!-- Completion Info -->
+                        <div class="space-y-1">
+                            <p class="font-semibold text-gray-900">Completed</p>
+                            <p class="text-gray-600">14/7/2025</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project Card 2 (Reversed Layout) -->
+            <div class="bg-gray-100 rounded-3xl border-4 border-black p-6 md:p-8 mb-16">
+                <div class="flex flex-col lg:flex-row-reverse items-center gap-8 lg:gap-12">
+                    
+                    <!-- Project Image Container -->
+                    <div class="w-full lg:w-1/2 flex-shrink-0">
+                        <div class="relative bg-gray-100 rounded-2xl p-4 md:p-6">
+                            <!-- Laptop Mockup -->
+                            <div class="relative bg-gray-800 rounded-lg p-1 border-2 border-black">
+                                <!-- Screen -->
+                                <div class="bg-white rounded-md aspect-[16/10] overflow-hidden border border-gray-300">
+                                    <!-- Replace this with your actual project image -->
+                                    <img src="assets/Scene2.jpg" alt="Second Project Name" class="w-full h-full object-cover">
+                                    <!-- Fallback mockup content (remove when you add your image) -->
+                                    <div class="h-full w-full bg-gray-50 flex items-center justify-center">
+                                        <div class="text-center p-8">
+                                            <!-- <div class="text-4xl md:text-6xl font-bold text-gray-800 mb-4">PROJECT 2</div> -->
+                                            <div class="w-16 h-16 mx-auto bg-gray-300 rounded-full mb-4"></div>
+                                            <div class="space-y-2">
+                                                <div class="h-2 bg-gray-300 rounded w-full"></div>
+                                                <div class="h-2 bg-gray-300 rounded w-3/4 mx-auto"></div>
+                                                <div class="h-2 bg-gray-300 rounded w-1/2 mx-auto"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Laptop Bottom -->
+                                <div class="h-2 bg-gray-600 rounded-b-lg"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Project Details -->
+                    <div class="w-full lg:w-1/2 text-center lg:text-left">
+                        <h3 class="text-3xl md:text-4xl font-bold mb-6">Teleprompter</h3>
+                        
+                        <!-- Visit Site Button -->
+                        <div class="mb-6">
+                            <a href="https://kingsley489.github.io/Teleprompter/" class="inline-flex items-center bg-gray-100 border-2 border-black rounded-full px-6 py-2 text-sm font-medium hover:bg-black hover:text-white transition duration-300 ease-in-out" target="_blank">
+                                visit site
+                                <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                </svg>
+                            </a>
+                        </div>
+
+                        <!-- Project Description -->
+                        <p class="text-gray-700 mb-6 leading-relaxed">
+                            As I jumped into the exciting world of content creation, I quickly realized that reading scripts from my notepad and scrolling through them manually was a real hassle—it constantly distracted me. To solve this problem, I decided to develop a Teleprompter web application. This nifty tool allows users to easily type or paste their scripts and scrolls them smoothly at customizable speeds, making it so much simpler to deliver content.
+                        </p>
+
+                        <!-- Completion Info -->
+                        <div class="space-y-1">
+                            <p class="font-semibold text-gray-900">Completed</p>
+                            <p class="text-gray-600">20/7/2025</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+             <!-- Project Card 3 -->
+            <div class="bg-gray-100 rounded-3xl border-4 border-black p-24 md:p-8 mb-16">
+                <div class="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+                    
+                    <!-- Project Image Container -->
+                    <div class="w-full lg:w-1/2 flex-shrink-0">
+                        <div class="relative bg-gray-100 rounded-2xl p-4 md:p-6">
+                            <!-- Laptop Mockup -->
+                            <div class="relative bg-gray-800 rounded-lg p-1">
+                                <!-- Screen -->
+                                <div class="bg-white rounded-md aspect-[16/10] overflow-hidden">
+                                    <!-- Replace this with your actual project image -->
+                                    <img src="assets/Scene3.jpg" alt="Project Name" class="w-full h-full object-cover">
+                                    <!-- Fallback mockup content (remove when you add your image) -->
+                                    <div class="h-full w-full bg-gray-50 flex items-center justify-center">
+                                        <div class="text-center p-8">
+                                            <!-- <div class="text-4xl md:text-6xl font-bold text-gray-800 mb-4">PROJECT 1</div> -->
+                                            <div class="w-16 h-16 mx-auto bg-gray-300 rounded-full mb-4"></div>
+                                            <div class="space-y-2">
+                                                <div class="h-2 bg-gray-300 rounded w-full"></div>
+                                                <div class="h-2 bg-gray-300 rounded w-3/4 mx-auto"></div>
+                                                <div class="h-2 bg-gray-300 rounded w-1/2 mx-auto"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Laptop Bottom -->
+                                <div class="h-2 bg-gray-600 rounded-b-lg"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Project Details -->
+                    <div class="w-full lg:w-1/2 text-center lg:text-left">
+                        <h3 class="text-3xl md:text-4xl font-bold mb-6">Weather App</h3>
+                        
+                        <!-- Visit Site Button -->
+                        <div class="mb-6">
+                            <a href="https://kingsley489.github.io/Weather-App/" class="inline-flex items-center bg-gray-100 border-2 border-black rounded-full px-6 py-2 text-sm font-medium hover:bg-black hover:text-white transition duration-300 ease-in-out" target="_blank">
+                                visit site
+                                <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                </svg>
+                            </a>
+                        </div>
+
+                        <!-- Project Description -->
+                        <p class="text-gray-700 mb-6 leading-relaxed">
+                          To test and hone my API integration skills, I developed a web application that provides real-time weather conditions. Users can simply search for any location within Nigeria, and the app automatically displays all relevant weather details for that specific area.
+                        </p>
+
+                        <!-- Completion Info -->
+                        <div class="space-y-1">
+                            <p class="font-semibold text-gray-900">Completed</p>
+                            <p class="text-gray-600">22/6/2025</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+              <!-- Project Card 4 (Reversed Layout) -->
+            <div class="bg-gray-100 rounded-3xl border-4 border-black p-6 md:p-8 mb-16">
+                <div class="flex flex-col lg:flex-row-reverse items-center gap-8 lg:gap-12">
+                    
+                    <!-- Project Image Container -->
+                    <div class="w-full lg:w-1/2 flex-shrink-0">
+                        <div class="relative bg-gray-100 rounded-2xl p-4 md:p-6">
+                            <!-- Laptop Mockup -->
+                            <div class="relative bg-gray-800 rounded-lg p-1 border-2 border-black">
+                                <!-- Screen -->
+                                <div class="bg-white rounded-md aspect-[16/10] overflow-hidden border border-gray-300">
+                                    <!-- Replace this with your actual project image -->
+                                    <img src="assets/Scene4.jpg" alt="Second Project Name" class="w-full h-full object-cover">
+                                    <!-- Fallback mockup content (remove when you add your image) -->
+                                    <div class="h-full w-full bg-gray-50 flex items-center justify-center">
+                                        <div class="text-center p-8">
+                                            <!-- <div class="text-4xl md:text-6xl font-bold text-gray-800 mb-4">PROJECT 2</div> -->
+                                            <div class="w-16 h-16 mx-auto bg-gray-300 rounded-full mb-4"></div>
+                                            <div class="space-y-2">
+                                                <div class="h-2 bg-gray-300 rounded w-full"></div>
+                                                <div class="h-2 bg-gray-300 rounded w-3/4 mx-auto"></div>
+                                                <div class="h-2 bg-gray-300 rounded w-1/2 mx-auto"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Laptop Bottom -->
+                                <div class="h-2 bg-gray-600 rounded-b-lg"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Project Details -->
+                    <div class="w-full lg:w-1/2 text-center lg:text-left">
+                        <h3 class="text-3xl md:text-4xl font-bold mb-6">HNG Blog Project</h3>
+                        
+                        <!-- Visit Site Button -->
+                        <div class="mb-6">
+                            <a href="https://kingsley489.github.io/Blog/" class="inline-flex items-center bg-gray-100 border-2 border-black rounded-full px-6 py-2 text-sm font-medium hover:bg-black hover:text-white transition duration-300 ease-in-out" target="_blank">
+                                visit site
+                                <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                </svg>
+                            </a>
+                        </div>
+
+                        <!-- Project Description -->
+                        <p class="text-gray-700 mb-6 leading-relaxed">
+                            In February 2025, I embarked on an exciting project with the HNG group and launched this personal blog. It’s a place where I can write articles and express my thoughts, allowing me to explore topics I’m truly passionate about while also highlighting my web development skills.
+                        </p>
+
+                        <!-- Completion Info -->
+                        <div class="space-y-1">
+                            <p class="font-semibold text-gray-900">Completed</p>
+                            <p class="text-gray-600">15/2/2025</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+
+
+        </div>
+    </section>
+
+
+
+
+    </section>
+</section>
+
+    <!-- === CONTACT SECTION === -->
+    <section class="py-20 bg-[#f4f4f4]" id="CONTACT">
+        <div class="container mx-auto px-4 max-w-6xl">
+            <!-- Section Header -->
+            <div class="text-left mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">Let's Connect</h2>
+                <p class="text-lg text-gray-600">Looking to create something amazing or<br>tackle a tough project? I'm always seeking<br>opportunities to apply my frontend development skills!</p>
+            </div>
+
+            <!-- Contact Form -->
+            <form class="max-w-2xl mx-auto md:mx-0">
+                <!-- Name Fields Row -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <input 
+                            type="text" 
+                            placeholder="Last Name" 
+                            class="w-full px-4 py-4 bg-gray-200 border-0 rounded-lg text-[#1e1e1e] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#1e1e1e] focus:bg-[#f4f4f4] transition duration-300"
+                            required
+                        >
+                    </div>
+                    <div>
+                        <input 
+                            type="text" 
+                            placeholder="First Name" 
+                            class="w-full px-4 py-4 bg-gray-200 border-0 rounded-lg text-[#1e1e1e] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#1e1e1e] focus:bg-[#f4f4f4] transition duration-300"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <!-- Email Field -->
+                <div class="mb-6">
+                    <input 
+                        type="email" 
+                        placeholder="Email" 
+                        class="w-full px-4 py-4 bg-gray-200 border-0 rounded-lg text-[#1e1e1e] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#1e1e1e] focus:bg-[#f4f4f4] transition duration-300"
+                        required
+                    >
+                </div>
+
+                <!-- Phone Number Field -->
+                <div class="mb-6">
+                    <input 
+                        type="tel" 
+                        placeholder="Phone Number" 
+                        class="w-full px-4 py-4 bg-gray-200 border-0 rounded-lg text-[#1e1e1e] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#1e1e1e] focus:bg-[#f4f4f4] transition duration-300"
+                    >
+                </div>
+
+                <!-- Message Field -->
+                <div class="mb-8">
+                    <textarea 
+                        placeholder="Message" 
+                        rows="6" 
+                        class="w-full px-4 py-4 bg-gray-200 border-0 rounded-lg text-[#1e1e1e] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#1e1e1e] focus:bg-[#f4f4f4] transition duration-300 resize-vertical"
+                        required
+                    ></textarea>
+                </div>
+
+                <!-- Submit Button -->
+                <button 
+                    type="submit" 
+                    class="w-full bg-black text-white py-4 px-6 rounded-lg font-medium text-sm uppercase tracking-wide hover:bg-gray-800 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
+                >
+                    Send Message
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <script>
+        // Get references to the hamburger menu icon and the mobile menu overlay
+        const hamburgerMenu = document.getElementById('hamburger-menu');
+        const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+        const closeMenuButton = document.getElementById('close-menu');
+
+        // Function to open the mobile menu
+        function openMobileMenu() {
+            mobileMenuOverlay.classList.remove('translate-x-full');
+            mobileMenuOverlay.classList.add('translate-x-0');
+            hamburgerMenu.classList.add('active'); // Animate hamburger to X
+        }
+
+        // Function to close the mobile menu
+        function closeMobileMenu() {
+            mobileMenuOverlay.classList.remove('translate-x-0');
+            mobileMenuOverlay.classList.add('translate-x-full');
+            hamburgerMenu.classList.remove('active'); // Animate X back to hamburger
+        }
+
+        // Add event listener to the hamburger menu icon to open the menu
+        hamburgerMenu.addEventListener('click', openMobileMenu);
+
+        // Add event listener to the close button (X icon) to close the menu
+        closeMenuButton.addEventListener('click', closeMobileMenu);
+
+        // Optional: Close mobile menu when a link is clicked (useful for single-page apps)
+        const mobileLinks = mobileMenuOverlay.querySelectorAll('a');
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', closeMobileMenu);
+        });
+    </script>
+</body>
+</html>
