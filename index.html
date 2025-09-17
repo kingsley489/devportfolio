@@ -187,14 +187,13 @@
 <body>
 <!-- Loader intro and scroll text -->
 <!-- Replace your #page-loader div with this improved layout -->
-<div id="page-loader" class="fixed inset-0 z-[9999] bg-[#f4f4f4] flex flex-col justify-end items-center h-screen transition-opacity duration-500">
-  <!-- Loader Bar centered at the bottom -->
-  <div class="w-full flex flex-col items-center pb-16">
-    <div class="w-40">
-      <div class="relative h-3 bg-gray-300 rounded-full overflow-hidden">
+<div id="page-loader" class="fixed inset-0 z-[9999] bg-[#f4f4f4] flex items-center justify-center h-screen transition-opacity duration-500">
+  <div class="flex flex-col items-center w-full max-w-xs px-4">
+    <div class="w-full">
+      <div class="relative h-2 bg-gray-300 rounded-full overflow-hidden">
         <div id="loader-bar" class="absolute left-0 top-0 h-full bg-[#111] rounded-full transition-all duration-300" style="width:0%"></div>
       </div>
-      <div class="text-center mt-2 text-base text-[#111] font-semibold" id="loader-percent">0%</div>
+      <div class="text-center mt-2 text-sm text-[#111] font-semibold" id="loader-percent">0%</div>
     </div>
   </div>
 </div>
@@ -849,10 +848,20 @@ window.addEventListener('DOMContentLoaded', hideLoaderWhenReady);
 #page-loader {
   transition: opacity 0.5s;
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
   align-items: center;
+  justify-content: center;
   height: 100vh;
+}
+#loader-bar {
+  background-color: #111;
+}
+@media (max-width: 640px) {
+  #page-loader .max-w-xs {
+    max-width: 90vw;
+  }
+  #page-loader .h-2 {
+    height: 6px;
+  }
 }
 </style>
 <script>
